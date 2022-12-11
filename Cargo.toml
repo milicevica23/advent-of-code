@@ -9,3 +9,7 @@ edition = "2021"
 #clap = "4.0.29"
 console = "0.15.2"
 indicatif = "0.17.2"
+regex = "1"
+
+[build]
+rustflags = ["-A unused_assignments"]

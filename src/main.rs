@@ -1,16 +1,11 @@
-use crate::utils::*; 
-use console::Term;
-use std::thread;
-use std::time::Duration;
+use std::{path::Path};
+use crate::utils::read_string;
 
 mod utils;
+mod puzzle;
 
 fn main() {
-    let term = Term::stdout();
-    term.write_line("Hello World!").expect("should write to terminal");
-    thread::sleep(Duration::from_millis(2000));
-    term.clear_line().expect("wrong");
-    let text = "test";
-    hello(text);
-    println!("Hello, world! {}", text);
+    let path = Path::new("./puzzle_input/2022/11/description_input.txt");
+    let puzzle_input = read_string(path);
+    println!("{}", puzzle_input);
 }
