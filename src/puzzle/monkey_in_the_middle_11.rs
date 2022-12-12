@@ -3,31 +3,26 @@ use regex::Regex;
 
 
 #[derive(Debug)]
-enum Method{
+pub enum Method{
     Plus, 
     Multiple
 }
 #[derive(Debug)]
 pub struct Monkey{
-    id: i32,
-    items_observed: i32,
-    items: Vec<i32>,
-    opertation_method: Method,
-    operation_scalar: i32,
-    test_scalar: i32,
-    test_true: i32, 
-    test_false: i32
+    pub id: i32,
+    pub items_observed: i32,
+    pub items: Vec<i32>,
+    pub opertation_method: Method,
+    pub operation_scalar: i32,
+   pub  test_scalar: i32,
+    pub test_true: i32, 
+    pub test_false: i32
 }
 
 pub fn parse_monkies(puzzle_input: &str) -> Vec<Monkey> {
 
     let re = Regex::new(
-        r#"Monkey (\d+):
-             Starting items: (\d+)
-             Operation: new = old (\+|\*) (\d+)
-             Test: divisible by (\d+)
-               If true: throw to monkey (\d+)
-               If false: throw to monkey (\d+)"#
+        r#""#
     ).expect("should be a valid regex!");
 
     let re = Regex::new(
