@@ -17,8 +17,8 @@ pub struct Monkey{
     pub opertation_method: Method,
     pub operation_scalar: i32,
     pub test_scalar: i32,
-    pub test_true: i32, 
-    pub test_false: i32
+    pub test_true: usize, 
+    pub test_false: usize
 }
 
 impl fmt::Display for Monkey {
@@ -61,12 +61,12 @@ pub fn parse_monkies(puzzle_input: &str) -> Vec<Monkey> {
                                                     .parse::<i32>()
                                                     .expect("test_sc should be a valid int!")),
                 test_true: cap.name("true_to")
-                .map_or(-1, |m| m.as_str()
-                                                    .parse::<i32>()
+                .map_or(0, |m| m.as_str()
+                                                    .parse::<usize>()
                                                     .expect("true_to should be a valid int!")),
                 test_false: cap.name("false_to")
-                .map_or(-1, |m| m.as_str()
-                                                    .parse::<i32>()
+                .map_or(0, |m| m.as_str()
+                                                    .parse::<usize>()
                                                     .expect("false_to should be a valid int!")),
             })
         }
@@ -75,13 +75,40 @@ pub fn parse_monkies(puzzle_input: &str) -> Vec<Monkey> {
 }
 
 pub fn play_game(input: &str) -> () {
-    let monkeys = parse_monkies(input);
-
-
-
-
+    let mut monkeys = parse_monkies(input);
+    let number_of_rounds = 1;
+    for round in 1..number_of_rounds {
+        let monkeys = play_one_round(monkeys);
+    }
 }
 
+
+fn play_one_round(mut monkeys: Vec<Monkey>) -> Vec<Monkey> {
+    for each_monkey_id in 1..monkeys.len() {
+        let mut monkey = monkeys.get_mut(each_monkey_id).expect("monkey should exist!");
+        let monkey_items = &monkey.items;
+        
+        monkey_items.iter().for_each(
+            |each_item | {
+                
+                let new_item_score = match monkey.opertation_method {
+                    Method::Multiple => each_item * monkey.operation_scalar,
+                    Method::Plus => each_item + monkey.operation_scalar,
+                    _ => panic!("no operation found!")
+                };
+                let new_item_score = new_item_score / 3;
+                if (new_item_score % monkey.test_scalar) == 0 {
+                    monkeys.get_mut(monkey.test_true).expect("monkey should exist!").items.push(new_item_score);
+                }else {
+                    monkeys.get_mut(monkey.test_false).expect("monkey should exist!").items.push(new_item_score);
+                }
+            }
+        );
+    
+    }
+    monkeys
+
+}
 
 
 #[cfg(test)]
@@ -114,4 +141,5 @@ mod tests {
             .fold("".to_string(), |ac, m| format!("{} {}",ac, &m.to_string()))
         , "testing parser {} {}", "","");
     }
+
 }
