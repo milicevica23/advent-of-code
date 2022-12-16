@@ -139,9 +139,9 @@ fn play_one_round(monkeys: &mut Vec<Monkey>) {
             |each_item| {
                 
                 let new_item_score = match monkey.opertation_method {
-                    Method::Multiple => each_item * monkey.operation_scalar,
+                    Method::Multiple => (each_item * monkey.operation_scalar) % monkey.test_scalar,
                     Method::Plus => each_item + monkey.operation_scalar,
-                    Method::SelfMultiple => each_item * each_item,
+                    Method::SelfMultiple => (each_item * each_item) % monkey.test_scalar ,
                     Method::SelfPlus => each_item + each_item,
                 };
                 let new_item_score = new_item_score;
@@ -253,7 +253,7 @@ mod tests {
         Test: divisible by 13
           If true: throw to monkey 2
           If false: throw to monkey 0"#;
-          let monkey_text = r#"Monkey 0:
+         let monkey_text = r#"Monkey 0:
           Starting items: 79, 98
           Operation: new = old * 19
           Test: divisible by 23
@@ -281,7 +281,7 @@ mod tests {
             If true: throw to monkey 0
             If false: throw to monkey 1"#;
           play_game(monkey_text);
-
+        //21346465600
     }
 
 
