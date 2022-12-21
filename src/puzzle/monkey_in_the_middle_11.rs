@@ -144,6 +144,7 @@ fn play_one_round(monkeys: &mut Vec<Monkey>) {
                     Method::SelfMultiple => (each_item * each_item) % monkey.test_scalar ,
                     Method::SelfPlus => each_item + each_item,
                 };
+                // TODO make big scores posible for second star
                 let new_item_score = new_item_score;
                 if (new_item_score % monkey.test_scalar) == 0 {
                     new_items.push(Change{id: monkey.test_true, item:new_item_score});
