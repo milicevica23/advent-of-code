@@ -6,6 +6,6 @@ My implementation of the solution for
 
 # Total stars 3 
 
-#2022:
-    ##11: *
-    ##01: **
+# 2022:
+    ## 11: *
+    ## 01: **
