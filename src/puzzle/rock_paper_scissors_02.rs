@@ -83,5 +83,4 @@ mod test {
         let result = games.iter().fold(0, |i, g| i + calculate_reward(g));
         println!("{}", result)
     }
-
 }
