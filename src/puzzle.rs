@@ -7,3 +7,5 @@ pub mod rock_paper_scissors_02;
 pub mod rucksack_reorganization_03;
 
 pub mod proboscidea_volcanium_16;
+
+pub mod camp_cleanup_04;
