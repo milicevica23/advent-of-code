@@ -151,57 +151,61 @@ fn play_game_2(input: Vec<Valve>) -> i32 {
     let mut round_left = 30;
     let mut my_position = "AA".to_owned();
     let already_seen = vec![];
-
+    let mut total_release = 0;
     loop {
         let cost_maping = find_how_many_steps(
-            mapping_move,
+            &mapping_move,
             my_position,
         );
-
+        println!("{:#?}", cost_maping);
         let max_position = cost_maping.iter().max_by_key(
             |(key, steps_away)| {
                 let release = *mapping_release.get(*key).unwrap();
-                let round_till_end = round_left - *steps_away - 1; 
-                if round_till_end >= 0 {
+                let round_till_end = round_left - *steps_away - 2; 
+                if !already_seen.contains(key) && round_till_end >= 0 {
                     round_till_end * release
                 }else{
                     -1
                 }
             }
         ).unwrap();
-
-
-
-
+        println!("{:#?}", max_position);
+        round_left = round_left - cost_maping.get(max_position.0).unwrap() - 2;
+        println!("{:#?}",round_left);
+        if already_seen.contains(&max_position.0) && round_left < 0{
+            break;
+        }
+        total_release += round_left * mapping_release.get(max_position.0).unwrap(); 
+        my_position = max_position.0.to_owned();
     }
 
 
     return 0;
 }
 
-fn find_how_many_steps(mapping_move:HashMap<String, &Vec<String>>,
+fn find_how_many_steps(mapping_move:&HashMap<String, &Vec<String>>,
                        start_position: String
                     ) -> HashMap<String, i32>{
     let mut steps_mapping = HashMap::new();
-    let all_keys = mapping_move.keys();
+    let all_keys = mapping_move.keys().clone();
     
     for element in all_keys{
         if *element == start_position {
             steps_mapping.insert(element.to_owned(), 0);
         }
         let mut step = 1; 
-        let already_seen = Vec::new();
+        let mut already_seen = Vec::new();
         let mut current_step = start_position.clone();
-        let new_elements = *mapping_move.get(&current_step).unwrap();
+        let mut new_elements = (*mapping_move.get(&current_step).unwrap()).clone();
         loop {
-            if new_elements.contains(&element) {
+            if new_elements.contains(element) {
                 steps_mapping.insert(element.to_owned(),step);
                 break;
             }
             let mut next_step_elements = Vec::new();
             for each_element in new_elements{
-                if !already_seen.contains(each_element){
-                    let new = *mapping_move.get(each_element).unwrap();
+                if !already_seen.contains(&each_element){
+                    let new = *mapping_move.get(&each_element).unwrap();
                     for each in new {
                         if !already_seen.contains(each){
                             next_step_elements.push(each.to_owned());
@@ -210,7 +214,7 @@ fn find_how_many_steps(mapping_move:HashMap<String, &Vec<String>>,
                     already_seen.push(each_element.to_owned());
                 } 
             }
-            new_elements.append(&mut next_step_elements);
+            new_elements = next_step_elements;
             step +=1;
         }
     }
@@ -236,7 +240,7 @@ mod test {
 
         let puzzle = parse_valves(&contents);
 
-        let result = play_game(puzzle);
+        let result = play_game_2(puzzle);
         println!("{:#?}", result);
     }
 
