@@ -161,7 +161,7 @@ fn play_game_2(input: Vec<Valve>) -> i32 {
         let max_position = cost_maping.iter().max_by_key(
             |(key, steps_away)| {
                 let release = *mapping_release.get(*key).unwrap();
-                let round_till_end = round_left - *steps_away - 2; 
+                let round_till_end = round_left - *steps_away - 2; //because come to the field and open 
                 if !already_seen.contains(key) && round_till_end >= 0 {
                     round_till_end * release
                 }else{
@@ -169,8 +169,14 @@ fn play_game_2(input: Vec<Valve>) -> i32 {
                 }
             }
         ).unwrap();
+
+        
+        //TODO make each combination of positives and evaluate the total release if it would go in particurall order but under 30 rounds
+
+
+
         println!("{:#?}", max_position);
-        round_left = round_left - cost_maping.get(max_position.0).unwrap() - 2;
+        round_left = round_left - cost_maping.get(max_position.0).unwrap() - 1;
         println!("{:#?}",round_left);
         if already_seen.contains(&max_position.0) && round_left < 0{
             break;
