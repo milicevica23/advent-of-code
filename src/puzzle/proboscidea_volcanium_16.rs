@@ -131,64 +131,6 @@ fn play_game(input: Vec<Valve>) -> i32 {
 }
 
 
-
-
-
-
-fn play_game_2(input: Vec<Valve>) -> i32 {
-    let mapping_move:HashMap<String, &Vec<String>> = input.iter().map(
-        |each_valve| {
-            (each_valve.name.clone(), &each_valve.goes_to)
-        }
-    ).collect();
-
-    let mapping_release:HashMap<String, i32> = input.iter().map(
-        |each_valve| {
-            (each_valve.name.clone(), each_valve.flow_rate)
-        }
-    ).collect();
-
-    let mut round_left = 30;
-    let mut my_position = "AA".to_owned();
-    let already_seen = vec![];
-    let mut total_release = 0;
-    loop {
-        let cost_maping = find_how_many_steps(
-            &mapping_move,
-            my_position,
-        );
-        println!("{:#?}", cost_maping);
-        let max_position = cost_maping.iter().max_by_key(
-            |(key, steps_away)| {
-                let release = *mapping_release.get(*key).unwrap();
-                let round_till_end = round_left - *steps_away - 2; //because come to the field and open 
-                if !already_seen.contains(key) && round_till_end >= 0 {
-                    round_till_end * release
-                }else{
-                    -1
-                }
-            }
-        ).unwrap();
-
-        
-        //TODO make each combination of positives and evaluate the total release if it would go in particurall order but under 30 rounds
-
-
-
-        println!("{:#?}", max_position);
-        round_left = round_left - cost_maping.get(max_position.0).unwrap() - 1;
-        println!("{:#?}",round_left);
-        if already_seen.contains(&max_position.0) && round_left < 0{
-            break;
-        }
-        total_release += round_left * mapping_release.get(max_position.0).unwrap(); 
-        my_position = max_position.0.to_owned();
-    }
-
-
-    return 0;
-}
-
 fn find_how_many_steps(mapping_move:&HashMap<String, &Vec<String>>,
                        start_position: String
                     ) -> HashMap<String, i32>{
@@ -227,6 +169,81 @@ fn find_how_many_steps(mapping_move:&HashMap<String, &Vec<String>>,
     return steps_mapping;
 }
 
+#[derive(Debug)]
+struct Comb{
+    path: Vec<String>,
+    round_left: i32,
+    total_release: i32,
+}
+
+
+fn play_game_2(input: Vec<Valve>) -> i32 {
+    let mapping_move:HashMap<String, &Vec<String>> = input.iter().map(
+        |each_valve| {
+            (each_valve.name.clone(), &each_valve.goes_to)
+        }
+    ).collect();
+
+    let mapping_release:HashMap<String, i32> = input.iter().map(
+        |each_valve| {
+            (each_valve.name.clone(), each_valve.flow_rate)
+        }
+    ).collect();
+
+    let mut overall_cost: HashMap<String, HashMap<String, i32>> = HashMap::new();
+
+    for each_start_position in mapping_move.keys() {
+        overall_cost.insert(each_start_position.to_owned(), find_how_many_steps(
+            &mapping_move,
+            each_start_position.to_owned(),
+        ));
+    }
+
+    let all_keys = mapping_move.keys().cloned().collect::<Vec<String>>();
+    let mut all_possible_combinations:Vec<Comb> = Vec::new();
+    all_possible_combinations.push(
+        Comb {
+            path : vec!["AA".to_owned()],
+            round_left: 30,
+            total_release: 0,
+        }
+    );
+    loop {
+        let mut new_comb = Vec::new();
+        for one_comb in &all_possible_combinations {
+            for one_valve in &all_keys {
+                if mapping_release.get(one_valve).unwrap() > &0 && !one_comb.path.contains(&one_valve){
+                    let round_left = one_comb.round_left - 
+                        overall_cost.get(one_comb.path.last().unwrap())
+                        .unwrap().get(one_valve).unwrap() - 1;
+                    if round_left > 0 {
+                        let mut new_path = one_comb.path.clone();
+                        new_path.push(one_valve.clone());
+                        new_comb.push(
+                            Comb {
+                                path : new_path,
+                                round_left: round_left,
+                                total_release: one_comb.total_release + round_left  *  mapping_release.get(one_valve).unwrap(),
+                            }
+                        )
+                    }
+                } 
+            }
+        }
+        if new_comb.is_empty() {
+            break;
+        }else {
+            all_possible_combinations = new_comb;
+        }
+    }
+    
+    let max = all_possible_combinations.iter().max_by_key(
+        |c| c.total_release
+    ).unwrap();
+    println!("{:#?}", max);
+    return 0;
+}
+
 
 #[cfg(test)]
 mod test {
@@ -240,7 +257,7 @@ mod test {
         //let file_path =  "C:\\Users\\SFP1Z6L\\git\\advent-of-code\\puzzle_input\\2022\\02\\description.txt";
         let file_path =  
                             base_path.to_str().expect("not a valid string!").to_owned() 
-                            + "\\puzzle_input\\2022\\16\\description.txt";
+                            + "\\puzzle_input\\2022\\16\\submit.txt";
         let contents = fs::read_to_string(file_path)
         .expect("Should have been able to read the file");
 
