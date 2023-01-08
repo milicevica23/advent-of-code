@@ -7,6 +7,7 @@ My implementation of the solution for
 # Total :star2: 9
 
 # 2022:
+- 16: :star2: x2
 - 11: :star2:
 - 04: :star2: x2
 - 03: :star2: x2
