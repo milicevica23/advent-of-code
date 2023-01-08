@@ -171,8 +171,10 @@ fn find_how_many_steps(mapping_move:&HashMap<String, &Vec<String>>,
 
 #[derive(Debug)]
 struct Comb{
-    path: Vec<String>,
-    round_left: i32,
+    my_path: Vec<String>,
+    el_path: Vec<String>,
+    my_round_left: i32,
+    el_round_left: i32,
     total_release: i32,
 }
 
@@ -203,8 +205,10 @@ fn play_game_2(input: Vec<Valve>) -> i32 {
     let mut all_possible_combinations:Vec<Comb> = Vec::new();
     all_possible_combinations.push(
         Comb {
-            path : vec!["AA".to_owned()],
-            round_left: 30,
+            my_path : vec!["AA".to_owned()],
+            el_path : vec!["AA".to_owned()],
+            my_round_left: 26,
+            el_round_left: 26,
             total_release: 0,
         }
     );
@@ -212,28 +216,57 @@ fn play_game_2(input: Vec<Valve>) -> i32 {
         let mut new_comb = Vec::new();
         for one_comb in &all_possible_combinations {
             for one_valve in &all_keys {
-                if mapping_release.get(one_valve).unwrap() > &0 && !one_comb.path.contains(&one_valve){
-                    let round_left = one_comb.round_left - 
-                        overall_cost.get(one_comb.path.last().unwrap())
-                        .unwrap().get(one_valve).unwrap() - 1;
-                    if round_left > 0 {
-                        let mut new_path = one_comb.path.clone();
+                if mapping_release.get(one_valve).unwrap() > &0 
+                    && !one_comb.my_path.contains(&one_valve)
+                    && !one_comb.el_path.contains(&one_valve){
+                    
+                    let my_round_left = one_comb.my_round_left - 
+                    overall_cost.get(one_comb.my_path.last().unwrap())
+                    .unwrap().get(one_valve).unwrap() - 1;
+                    if my_round_left > 0 {
+                        let mut new_path = one_comb.my_path.clone();
                         new_path.push(one_valve.clone());
                         new_comb.push(
                             Comb {
-                                path : new_path,
-                                round_left: round_left,
-                                total_release: one_comb.total_release + round_left  *  mapping_release.get(one_valve).unwrap(),
+                                my_path : new_path,
+                                el_path : one_comb.el_path.clone(),
+                                my_round_left: my_round_left,
+                                el_round_left: one_comb.el_round_left,
+                                total_release: one_comb.total_release + my_round_left *  mapping_release.get(one_valve).unwrap(),
                             }
                         )
                     }
+
+                    let el_round_left = one_comb.el_round_left - 
+                    overall_cost.get(one_comb.el_path.last().unwrap())
+                    .unwrap().get(one_valve).unwrap() - 1;
+                    if el_round_left > 0 {
+                        let mut new_path = one_comb.el_path.clone();
+                        new_path.push(one_valve.clone());
+                        new_comb.push(
+                            Comb {
+                                my_path : one_comb.my_path.clone(),
+                                my_round_left: one_comb.my_round_left,
+                                el_path : new_path,
+                                el_round_left: el_round_left,
+                                total_release: one_comb.total_release + el_round_left * mapping_release.get(one_valve).unwrap(),
+                            }
+                        )
+                    } 
                 } 
             }
         }
         if new_comb.is_empty() {
             break;
         }else {
-            all_possible_combinations = new_comb;
+            new_comb.sort_by_key(
+                |c| -c.total_release
+            );
+            if new_comb.len() > 10000 {
+                all_possible_combinations = new_comb.into_iter().take(10000).collect::<Vec<_>>();
+            }else {
+                all_possible_combinations = new_comb;
+            }
         }
     }
     
