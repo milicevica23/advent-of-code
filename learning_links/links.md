@@ -2,7 +2,7 @@
   - [Understand compile process](#understand-compile-process)
     - [blogs](#blogs)
     - [youtube](#youtube)
-- [Crate](#crate)
+- [Crate d](#crate-d)
   - [serde](#serde)
 
 
@@ -15,7 +15,7 @@
 - [Making a Rust crate compile faster](https://www.youtube.com/watch?v=pMiqRM5ooNw)
 
 
-# Crate 
+# Crate d
 ## [serde](https://serde.rs/) 
 
 
