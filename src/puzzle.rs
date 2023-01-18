@@ -9,3 +9,5 @@ pub mod rucksack_reorganization_03;
 pub mod proboscidea_volcanium_16;
 
 pub mod camp_cleanup_04;
+
+pub mod pyroclastic_flow_17;

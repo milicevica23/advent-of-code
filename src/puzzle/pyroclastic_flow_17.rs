@@ -1,5 +1,54 @@
 
 
+enum Move {
+    Left,
+    Right,
+}
+struct Game {
+    current_rock:  Box<dyn Rock>,
+    moves: Vec<Move>,
+    x: i32, //breite
+    max_y: i32
+}
+
+
+trait Rock {
+    fn move_left(&self);
+    fn move_right(&self);
+    fn move_down(&self);    
+}
+
+struct MinusRock{
+    parts: Vec<i32>,
+}
+
+impl MinusRock {
+    pub fn new(start_position: i32, x_length: i32) -> Self {
+        Self { 
+            parts: vec![start_position,start_position+1,start_position+2,start_position+3],
+        }
+    }
+}
+
+
+impl Rock for MinusRock {
+    fn move_left(&self){}
+    fn move_right(&self){}
+    fn move_down(&self){}
+}
+
+
+fn parse_game(puzzle_input: &str) -> Vec<Move> {
+    puzzle_input.chars().map(
+        |c| match c {
+            '<' => Move::Left,
+            '>' => Move::Right,
+            ch => panic!("{} is not allowed", ch)
+        }
+    ).collect()
+}
+
+
 
 #[cfg(test)]
 mod test {
