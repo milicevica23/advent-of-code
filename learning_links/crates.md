@@ -14,3 +14,10 @@ Frameworks
 ## Backend
 - https://actix.rs/
 - https://github.com/yewstack/yew
+
+## Logic testing
+- https://github.com/stateright/stateright -> https://www.youtube.com/watch?v=ABoCnrVWCKY
+
+
+## Kafka 
+- https://crates.io/crates/rdkafka
